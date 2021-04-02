@@ -1,5 +1,7 @@
 #pragma once
 
+#include "aircraft_factory.hpp"
+#include "aircraft_manager.hpp"
 #include "aircraft_manager.hpp"
 
 #include <memory>
@@ -14,6 +16,7 @@ private:
     bool help        = false;
     Airport* airport = nullptr;
     AircraftManager manager;
+    AircraftFactory aircraft_factory;
 
     TowerSimulation(const TowerSimulation&) = delete;
     TowerSimulation& operator=(const TowerSimulation&) = delete;
