@@ -21,7 +21,7 @@ std::unique_ptr<Aircraft> AircraftFactory::create_aircraft(const AircraftType& t
     const Point3D direction = (-start).normalize();
 
     // La gestion des Aircrafts se fait maintenant via des unique_ptr de bout en bout.
-    return std::make_unique<Aircraft>(type, flight_number, start, direction, airport->get_tower());
+    return std::make_unique<Aircraft>(type, flight_number, start, direction, airport->get_tower(), std::experimental::randint(150, 3000));
 }
 
 std::unique_ptr<Aircraft> AircraftFactory::create_random_aircraft(Airport* airport)

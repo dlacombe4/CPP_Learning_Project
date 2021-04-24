@@ -82,21 +82,21 @@ struct Point3D
     Point3D& operator+=(const Point3D& other)
     {
         std::transform(values.begin(), values.end(), other.values.begin(), values.begin(),
-                [](const float& a, const float& b) { return a + b; });
+                [](const float& x, const float& y) { return x + y; });
         return *this;
     }
 
     Point3D& operator-=(const Point3D& other)
     {
         std::transform(values.begin(), values.end(), other.values.begin(), values.begin(),
-                [](const float& a, const float& b) { return a - b; });
+                [](const float& x, const float& y) { return x - y; });
         return *this;
     }
 
     Point3D& operator*=(const float scalar)
     {
         std::transform(values.begin(), values.end(), values.begin(),
-                [scalar](const float& v) { return v * scalar; });
+                [scalar](const float& x) { return x * scalar; });
         return *this;
     }
 
