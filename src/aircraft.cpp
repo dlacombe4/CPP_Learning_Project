@@ -91,8 +91,9 @@ void Aircraft::add_waypoint(const Waypoint& wp, const bool front)
 bool Aircraft::update()
 {
     if(fuel < 0.f){
-        std::cout << flight_number + " crashed, has no fuel remaining..." << std::endl;
-        throw AircraftCrash {flight_number + " crashed, has no fuel remaining..."};
+        std::cerr << flight_number << " crashed, has no fuel remaining..." << std::endl;
+        using namespace std::string_literals;
+        throw AircraftCrash { flight_number + " crashed, has no fuel remaining"s };
     }
     if(is_circling() && !hasTerminal()) {
         const auto tmp = control.reserve_terminal(*this);
@@ -135,6 +136,7 @@ bool Aircraft::update()
         {
             if (!landing_gear_deployed)
             {
+                std::cerr << flight_number << " crashed into the ground" << std::endl;
                 using namespace std::string_literals;
                 throw AircraftCrash { flight_number + " crashed into the ground"s };
             }
