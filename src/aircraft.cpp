@@ -90,14 +90,26 @@ void Aircraft::add_waypoint(const Waypoint& wp, const bool front)
 
 bool Aircraft::update()
 {
+    if(fuel < 0.f){
+        std::cerr << flight_number << " crashed, has no fuel remaining..." << std::endl;
+        using namespace std::string_literals;
+        throw AircraftCrash { flight_number + " crashed, has no fuel remaining"s };
+    }
+    if(is_circling() && !hasTerminal()) {
+        const auto tmp = control.reserve_terminal(*this);
+        std::copy(tmp.begin(), tmp.end(), std::back_inserter(waypoints));
+    }
+
     if (waypoints.empty())
     {
         if (is_service_done)
         {
             return false;
         }
-
-        waypoints = control.get_instructions(*this);
+        for(const auto& wp:control.get_instructions(*this))
+        {
+            add_waypoint(wp, false);
+        }
     }
 
     if (!is_at_terminal)
@@ -124,12 +136,14 @@ bool Aircraft::update()
         {
             if (!landing_gear_deployed)
             {
+                std::cerr << flight_number << " crashed into the ground" << std::endl;
                 using namespace std::string_literals;
                 throw AircraftCrash { flight_number + " crashed into the ground"s };
             }
         }
         else
         {
+            this->fuel -= 0.5;
             // if we are in the air, but too slow, then we will sink!
             const float speed_len = speed.length();
             if (speed_len < SPEED_THRESHOLD)
@@ -143,6 +157,36 @@ bool Aircraft::update()
     }
 
     return true;
+}
+
+bool Aircraft::is_low_on_fuel() const
+{
+    return this->fuel < 200;
+}
+
+bool Aircraft::has_terminal() const
+{
+    if (waypoints.empty())
+    {
+        return is_at_terminal;
+    }
+    return waypoints.back().type == wp_terminal;
+}
+
+bool Aircraft::is_circling() const
+{
+    if (waypoints.empty())
+    {
+        return true;
+    }
+    return waypoints.back().type == wp_air;
+}
+
+bool Aircraft::hasTerminal() const
+{
+    if(is_service_done) return false;
+    if(waypoints.empty()) return is_at_terminal;
+    return waypoints.back().is_at_terminal();
 }
 
 void Aircraft::display() const

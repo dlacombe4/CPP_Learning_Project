@@ -20,19 +20,11 @@ private:
     Tower& control;
     bool landing_gear_deployed = false; // is the landing gear deployed?
     bool is_at_terminal        = false;
-
-    // TASK-0 C-3
-    // L'endroit le plus approprié pour retirer l'avion, c'est lorsque :
-    // 1. l'attérissage a déjà eu lieu => on ajoute un attribut
-    // 2. l'avion a terminé sa course de décollage => waypoints.empty()
+    bool has_landed            = false;
+    bool has_crashed           = false;
+    float fuel;
     bool is_service_done = false;
 
-    // turn the aircraft to arrive at the next waypoint
-    // try to facilitate reaching the waypoint after the next by facing the
-    // right way to this end, we try to face the point Z on the line spanned by
-    // the next two waypoints such that Z's distance to the next waypoint is
-    // half our distance so: |w1 - pos| = d and [w1 - w2].normalize() = W and Z
-    // = w1 + W*d/2
     void turn_to_waypoint();
     void turn(Point3D direction);
 
@@ -52,13 +44,14 @@ private:
 
 public:
     Aircraft(const AircraftType& type_, const std::string_view& flight_number_, const Point3D& pos_,
-             const Point3D& speed_, Tower& control_) :
+             const Point3D& speed_, Tower& control_, const float fuel_) :
         GL::Displayable { pos_.x() + pos_.y() },
         type { type_ },
         flight_number { flight_number_ },
         pos { pos_ },
         speed { speed_ },
-        control { control_ }
+        control { control_ },
+        fuel { fuel_ }
     {
         speed.cap_length(max_speed());
     }
@@ -68,6 +61,10 @@ public:
 
     void display() const override;
     bool update() override;
+    bool is_low_on_fuel() const;
+    bool has_terminal() const;
+    bool is_circling() const;
+    bool hasTerminal() const;
 
     friend class Tower;
 };

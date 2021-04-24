@@ -33,12 +33,12 @@ TowerSimulation::~TowerSimulation()
     delete airport;
 }
 
-std::unique_ptr<Aircraft> TowerSimulation::create_aircraft(const AircraftType& type) const
+std::unique_ptr<Aircraft> TowerSimulation::create_aircraft(const AircraftType& type)
 {
     return aircraft_factory.create_aircraft(type, airport);
 }
 
-std::unique_ptr<Aircraft> TowerSimulation::create_random_aircraft() const
+std::unique_ptr<Aircraft> TowerSimulation::create_random_aircraft()
 {
     return aircraft_factory.create_random_aircraft(airport);
 }
@@ -53,6 +53,14 @@ void TowerSimulation::create_keystrokes()
     GL::keystrokes.emplace('+', []() { GL::change_zoom(0.95f); });
     GL::keystrokes.emplace('-', []() { GL::change_zoom(1.05f); });
     GL::keystrokes.emplace('f', []() { GL::toggle_fullscreen(); });
+    GL::keystrokes.emplace('0', [this]() {manager.print_count_aircrafts_on_line(0);});
+    GL::keystrokes.emplace('1', [this]() {manager.print_count_aircrafts_on_line(1);});
+    GL::keystrokes.emplace('2', [this]() {manager.print_count_aircrafts_on_line(2);});
+    GL::keystrokes.emplace('3', [this]() {manager.print_count_aircrafts_on_line(3);});
+    GL::keystrokes.emplace('4', [this]() {manager.print_count_aircrafts_on_line(4);});
+    GL::keystrokes.emplace('5', [this]() {manager.print_count_aircrafts_on_line(5);});
+    GL::keystrokes.emplace('6', [this]() {manager.print_count_aircrafts_on_line(6);});
+    GL::keystrokes.emplace('7', [this]() {manager.print_count_aircrafts_on_line(7);});
 
     // TASK_0 C-2: framerate control
     // Framerate cannot equal 0 or the program would get stuck / crash.
@@ -73,9 +81,9 @@ void TowerSimulation::display_help() const
     std::cout << "This is an airport tower simulator" << std::endl
               << "the following keysstrokes have meaning:" << std::endl;
 
-    for (const auto& ks_pair : GL::keystrokes)
+    for (const auto& [input, keystroke] : GL::keystrokes)
     {
-        std::cout << ks_pair.first << ' ';
+        std::cout << input << ' ';
     }
 
     std::cout << std::endl;
