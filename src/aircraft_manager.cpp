@@ -48,6 +48,19 @@ void AircraftManager::print_count_aircrafts_on_line(int line)
     std::cout << "Nombre d'avion de classe " << airline << " : " << count(line) << std::endl;
 }
 
-int AircraftManager::get_crashed_aircrafts() const{
+int AircraftManager::get_crashed_aircrafts() const
+{
     return crashed_aircrafts;
+}
+
+float AircraftManager::get_required_fuel() const
+{
+    return std::transform_reduce(aircrafts.begin(), aircrafts.end(),0.,
+        [](float a, float b){
+            return a+b;
+        }, [](const std::unique_ptr<Aircraft>&a ){
+            if(a->has_terminal() && a->is_low_on_fuel())
+                return 3000.f - a->get_fuel();
+            return 0.f;
+        });
 }

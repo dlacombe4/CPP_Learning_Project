@@ -1,9 +1,18 @@
 #pragma once
 
+#include "GL/opengl_interface.hpp"
+#include "aircraft.hpp"
+#include "airport.hpp"
 #include "aircraft_factory.hpp"
 #include "aircraft_manager.hpp"
-#include "aircraft_manager.hpp"
+#include "config.hpp"
+#include "img/image.hpp"
+#include "img/media_path.hpp"
 
+#include <algorithm>
+#include <cassert>
+#include <cstdlib>
+#include <ctime>
 #include <memory>
 
 class Aircraft;

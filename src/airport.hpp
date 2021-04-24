@@ -20,6 +20,9 @@ private:
     const GL::Texture2D texture;
     std::vector<Terminal> terminals;
     Tower tower;
+    float fuel_stock;
+    float ordered_fuel;
+    float next_refill_time;
 
     // reserve a terminal
     // if a terminal is free, return
@@ -57,7 +60,10 @@ public:
         pos { pos_ },
         texture { image },
         terminals { type.create_terminals() },
-        tower { *this }
+        tower { *this },
+        fuel_stock {0.f},
+        ordered_fuel {0.f},
+        next_refill_time {0.f}
     {}
 
     Tower& get_tower() { return tower; }

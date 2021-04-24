@@ -22,4 +22,5 @@ public:
     int count(int line);
     void print_count_aircrafts_on_line(int line);
     int get_crashed_aircrafts() const;
+    float get_required_fuel() const;
 };

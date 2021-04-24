@@ -1,17 +1,5 @@
 #include "tower_sim.hpp"
 
-#include "GL/opengl_interface.hpp"
-#include "aircraft.hpp"
-#include "airport.hpp"
-#include "config.hpp"
-#include "img/image.hpp"
-#include "img/media_path.hpp"
-
-#include <algorithm>
-#include <cassert>
-#include <cstdlib>
-#include <ctime>
-
 using namespace std::string_literals;
 
 TowerSimulation::TowerSimulation(int argc, char** argv) :
