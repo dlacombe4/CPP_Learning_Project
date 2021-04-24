@@ -48,7 +48,7 @@ void Aircraft::arrive_at_terminal()
 {
     // we arrived at a terminal, so start servicing
     control.arrived_at_terminal(*this);
-    is_at_terminal = true;
+    is_at_terminal_field = true;
 }
 
 // deploy and retract landing gear depending on next waypoints
@@ -95,7 +95,7 @@ bool Aircraft::update()
         using namespace std::string_literals;
         throw AircraftCrash { flight_number + " crashed, has no fuel remaining"s };
     }
-    if(is_circling() && !hasTerminal()) {
+    if(is_circling() && !has_terminal()) {
         const auto tmp = control.reserve_terminal(*this);
         std::copy(tmp.begin(), tmp.end(), std::back_inserter(waypoints));
     }
@@ -112,7 +112,7 @@ bool Aircraft::update()
         }
     }
 
-    if (!is_at_terminal)
+    if (!is_at_terminal_field)
     {
         turn_to_waypoint();
         // move in the direction of the current speed
@@ -161,14 +161,14 @@ bool Aircraft::update()
 
 bool Aircraft::is_low_on_fuel() const
 {
-    return this->fuel < 200;
+    return fuel < 200.;
 }
 
 bool Aircraft::has_terminal() const
 {
     if (waypoints.empty())
     {
-        return is_at_terminal;
+        return is_at_terminal_field;
     }
     return waypoints.back().type == wp_terminal;
 }
@@ -182,14 +182,17 @@ bool Aircraft::is_circling() const
     return waypoints.back().type == wp_air;
 }
 
-bool Aircraft::hasTerminal() const
-{
-    if(is_service_done) return false;
-    if(waypoints.empty()) return is_at_terminal;
-    return waypoints.back().is_at_terminal();
-}
-
 void Aircraft::display() const
 {
     type.texture.draw(project_2D(pos), { PLANE_TEXTURE_DIM, PLANE_TEXTURE_DIM }, get_speed_octant());
+}
+
+bool Aircraft::is_at_terminal() const
+{
+    return is_at_terminal_field;
+}
+
+float Aircraft::get_fuel() const
+{
+    return fuel;
 }

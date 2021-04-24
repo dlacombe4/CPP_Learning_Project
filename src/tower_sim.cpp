@@ -61,6 +61,7 @@ void TowerSimulation::create_keystrokes()
     GL::keystrokes.emplace('5', [this]() {manager.print_count_aircrafts_on_line(5);});
     GL::keystrokes.emplace('6', [this]() {manager.print_count_aircrafts_on_line(6);});
     GL::keystrokes.emplace('7', [this]() {manager.print_count_aircrafts_on_line(7);});
+    GL::keystrokes.emplace('m', [this]() {std::cout << "Number of crashed Aircrafts : " << manager.get_crashed_aircrafts() << std::endl;});
 
     // TASK_0 C-2: framerate control
     // Framerate cannot equal 0 or the program would get stuck / crash.

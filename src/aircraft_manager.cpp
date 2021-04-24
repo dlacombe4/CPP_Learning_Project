@@ -12,15 +12,25 @@ void AircraftManager::add(std::unique_ptr<Aircraft> aircraft)
 
 bool AircraftManager::update()
 {
-    std::sort(aircrafts.begin(), aircrafts.end());
-    aircrafts.erase(std::remove_if(aircrafts.begin(), aircrafts.end(),
-        [this](std::unique_ptr<Aircraft>& aircraft) {
-            if(!aircraft->update()) {
-                aircraft_factory.delete_flight_number(aircraft);
-                return true;
-            } 
-            return false;
-        }), aircrafts.end());
+    std::sort(aircrafts.begin(), aircrafts.end(), [](std::unique_ptr<Aircraft> &a, std::unique_ptr<Aircraft> &b){
+    if(a->is_at_terminal()&& !b -> is_at_terminal()){
+    return true;
+    }
+
+    if (!a->is_at_terminal() && b->is_at_terminal())
+    return false;
+
+    return a -> get_fuel() < b -> get_fuel();
+    });
+
+    aircrafts.erase(std::remove_if(aircrafts.begin(), aircrafts.end(), [this](std::unique_ptr<Aircraft> &a) {
+        try{
+            return !a->update();
+        }catch (const AircraftCrash& e){
+            crashed_aircrafts++;
+            return true;
+        }
+    }), aircrafts.end());
     return true;
 }
 
@@ -36,4 +46,8 @@ void AircraftManager::print_count_aircrafts_on_line(int line)
 {
     auto airline = aircraft_factory.get_airline(line);
     std::cout << "Nombre d'avion de classe " << airline << " : " << count(line) << std::endl;
+}
+
+int AircraftManager::get_crashed_aircrafts() const{
+    return crashed_aircrafts;
 }

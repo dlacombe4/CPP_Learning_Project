@@ -15,7 +15,7 @@ WaypointQueue Tower::get_circle() const
 
 WaypointQueue Tower::get_instructions(Aircraft& aircraft)
 {
-    if (!aircraft.is_at_terminal)
+    if (!aircraft.is_at_terminal_field)
     {
         // if the aircraft is far, then just guide it to the airport vicinity
         if (aircraft.distance_to(airport.pos) < 5)
@@ -49,7 +49,7 @@ WaypointQueue Tower::get_instructions(Aircraft& aircraft)
             aircraft.is_service_done = true;
             terminal.finish_service();
             reserved_terminals.erase(it);
-            aircraft.is_at_terminal = false;
+            aircraft.is_at_terminal_field = false;
             return airport.start_path(terminal_num);
         }
         else

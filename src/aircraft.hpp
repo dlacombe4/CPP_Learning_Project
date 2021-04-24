@@ -19,7 +19,7 @@ private:
     WaypointQueue waypoints = {};
     Tower& control;
     bool landing_gear_deployed = false; // is the landing gear deployed?
-    bool is_at_terminal        = false;
+    bool is_at_terminal_field  = false;
     bool has_landed            = false;
     bool has_crashed           = false;
     float fuel;
@@ -64,7 +64,8 @@ public:
     bool is_low_on_fuel() const;
     bool has_terminal() const;
     bool is_circling() const;
-    bool hasTerminal() const;
+    bool is_at_terminal() const;
+    float get_fuel() const;
 
     friend class Tower;
 };

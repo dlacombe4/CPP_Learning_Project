@@ -13,6 +13,7 @@ class AircraftManager : public GL::DynamicObject
 private:
     std::vector<std::unique_ptr<Aircraft>> aircrafts;
     AircraftFactory aircraft_factory;
+    int crashed_aircrafts = 0;
 
 public:
     void init();
@@ -20,4 +21,5 @@ public:
     bool update() override;
     int count(int line);
     void print_count_aircrafts_on_line(int line);
+    int get_crashed_aircrafts() const;
 };
