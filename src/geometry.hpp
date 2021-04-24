@@ -7,130 +7,103 @@
 #include <iostream>
 #include <numeric>
 
-struct Point2D
+template<size_t size, typename t>
+struct Point
 {
-    float values[2] {};
+    std::array<t, size> values;
 
-    Point2D() {}
-    Point2D(float x, float y) : values { x, y } {}
+    template<typename... other_ts>
+    Point(const t& first, const other_ts&... others)
+        :   values {first, static_cast<t>(others)...}
+    {}
 
-    float& x() { return values[0]; }
-    float x() const { return values[0]; }
+    t& x() { return values[0]; }
+    t x() const { return values[0]; }
 
-    float& y() { return values[1]; }
-    float y() const { return values[1]; }
+    t& y() {
+        static_assert(size >= 2);
+        return values[1];
+    }
 
-    Point2D& operator+=(const Point2D& other)
+    t y() const {
+        static_assert(size >= 2);
+        return values[1];
+    }
+
+    float& z() {
+        static_assert(size >= 3);
+        return values[2];
+    }
+    float z() const {
+        static_assert(size >= 3);
+        return values[2];
+    }
+
+    Point& operator+=(const Point& other)
     {
-        x() += other.x();
-        y() += other.y();
+        std::transform(values.begin(), values.end(), other.values.begin(), values.begin(),
+                std::plus<t>());
         return *this;
     }
 
-    Point2D& operator*=(const Point2D& other)
+    Point& operator-=(const Point& other)
     {
-        x() *= other.x();
-        y() *= other.y();
+        std::transform(values.begin(), values.end(), other.values.begin(), values.begin(),
+                std::minus<t>());
         return *this;
     }
 
-    Point2D& operator*=(const float scalar)
+    Point& operator*=(const Point& other)
     {
-        x() *= scalar;
-        y() *= scalar;
+        std::transform(values.begin(), values.end(), other.values.begin(), values.begin(),
+                std::multiplies<t>());
         return *this;
     }
 
-    Point2D operator+(const Point2D& other) const
+    Point operator+(const Point& other) const
     {
-        Point2D result = *this;
+        Point result = *this;
         result += other;
         return result;
     }
 
-    Point2D operator*(const Point2D& other) const
+    Point operator-(const Point& other) const
     {
-        Point2D result = *this;
-        result *= other;
-        return result;
-    }
-
-    Point2D operator*(const float scalar) const
-    {
-        Point2D result = *this;
-        result *= scalar;
-        return result;
-    }
-};
-
-struct Point3D
-{
-    std::array<float, 3> values;
-
-    Point3D() {}
-    Point3D(float x, float y, float z) : values { x, y, z } {}
-
-    float& x() { return values[0]; }
-    float x() const { return values[0]; }
-
-    float& y() { return values[1]; }
-    float y() const { return values[1]; }
-
-    float& z() { return values[2]; }
-    float z() const { return values[2]; }
-
-    Point3D& operator+=(const Point3D& other)
-    {
-        std::transform(values.begin(), values.end(), other.values.begin(), values.begin(),
-                [](const float& x, const float& y) { return x + y; });
-        return *this;
-    }
-
-    Point3D& operator-=(const Point3D& other)
-    {
-        std::transform(values.begin(), values.end(), other.values.begin(), values.begin(),
-                [](const float& x, const float& y) { return x - y; });
-        return *this;
-    }
-
-    Point3D& operator*=(const float scalar)
-    {
-        std::transform(values.begin(), values.end(), values.begin(),
-                [scalar](const float& x) { return x * scalar; });
-        return *this;
-    }
-
-    Point3D operator+(const Point3D& other) const
-    {
-        Point3D result = *this;
-        result += other;
-        return result;
-    }
-
-    Point3D operator-(const Point3D& other) const
-    {
-        Point3D result = *this;
+        Point result = *this;
         result -= other;
         return result;
     }
 
-    Point3D operator*(const float scalar) const
+    Point operator*(const t scalar) const
     {
-        Point3D result = *this;
+        Point result = *this;
         result *= scalar;
         return result;
     }
 
-    Point3D operator-() const { return Point3D { -x(), -y(), -z() }; }
+    Point operator*(const Point& other) const
+    {
+        Point result = *this;
+        result *= other;
+        return result;
+    }
 
-    float length() const {
+    Point operator-() const {
+        Point result = *this;
+        std::transform(result.values.begin(), result.values.end(), result.values.begin(), [](const t& value){
+            return -value;
+        });
+        return result;
+    }
+
+    t length() const {
         return std::sqrt(std::reduce(values.begin(), values.end(), 0., 
                 [](float f1, float f2) { return f1 + f2 * f2; }));
     }
 
-    float distance_to(const Point3D& other) const { return (*this - other).length(); }
+    float distance_to(const Point& other) const { return (*this - other).length(); }
 
-    Point3D& normalize(const float target_len = 1.0f)
+    Point& normalize(const float target_len = 1.0f)
     {
         const float current_len = length();
         if (current_len == 0)
@@ -142,7 +115,7 @@ struct Point3D
         return *this;
     }
 
-    Point3D& cap_length(const float max_len)
+    Point& cap_length(const float max_len)
     {
         assert(max_len > 0);
 
@@ -155,6 +128,9 @@ struct Point3D
         return *this;
     }
 };
+
+using Point2D = Point<2,float>;
+using Point3D = Point<3,float>;
 
 // our 3D-coordinate system will be tied to the airport: the runway is parallel to the x-axis, the z-axis
 // points towards the sky, and y is perpendicular to both thus,
