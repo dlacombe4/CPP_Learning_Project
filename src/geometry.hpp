@@ -10,7 +10,7 @@
 template<size_t size, typename t>
 struct Point
 {
-    std::array<t, size> values;
+    std::array<t, size> values {};
 
     template<typename... other_ts>
     Point(const t& first, const other_ts&... others)
@@ -30,11 +30,12 @@ struct Point
         return values[1];
     }
 
-    float& z() {
+    t& z() {
         static_assert(size >= 3);
         return values[2];
     }
-    float z() const {
+
+    t z() const {
         static_assert(size >= 3);
         return values[2];
     }
@@ -50,13 +51,21 @@ struct Point
     {
         std::transform(values.begin(), values.end(), other.values.begin(), values.begin(),
                 std::minus<t>());
+
+        return *this;
+    }
+
+    Point& operator*=(const t scalar)
+    {
+        std::transform(values.begin(), values.end(), values.begin(),
+                [scalar](t f){ return f*scalar; } );
         return *this;
     }
 
     Point& operator*=(const Point& other)
     {
         std::transform(values.begin(), values.end(), other.values.begin(), values.begin(),
-                std::multiplies<t>());
+                std::multiplies<>{});
         return *this;
     }
 
@@ -90,15 +99,18 @@ struct Point
 
     Point operator-() const {
         Point result = *this;
-        std::transform(result.values.begin(), result.values.end(), result.values.begin(), [](const t& value){
-            return -value;
-        });
+        std::transform(result.values.begin(), result.values.end(), result.values.begin(),
+                [](const t& value){ return -value; });
         return result;
     }
 
-    t length() const {
-        return std::sqrt(std::reduce(values.begin(), values.end(), 0., 
-                [](float f1, float f2) { return f1 + f2 * f2; }));
+    t length() const
+    {
+        return std::sqrt(std::reduce(
+                values.begin(),
+                values.end(),
+                0.f,
+                [](t f1, t f2){ return f1+f2*f2;}));
     }
 
     float distance_to(const Point& other) const { return (*this - other).length(); }
